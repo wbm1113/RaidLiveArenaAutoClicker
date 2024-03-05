@@ -18,7 +18,7 @@ Autoclicker for Raid: Shadow Legends Live Arena.  USE AT YOUR OWN RISK.
 No.  The script will move the mouse and send simulated clicks/keystrokes.  If you move the mouse or try to use your computer while the script is running, you will interfere with the script and the script will interfere with what you are doing.
 
 ### Does it work in all tiers?
-No.  It won't work above Gold because it's only programmed to be able to select 5 champions.  Once I get to Gold, I will fix this.
+No.  It won't work above Silver because it's only programmed to be able to select 5 champions.  Once I get to Gold, I will fix this.
 
 ### Will I get banned if I use it?
 I don't know.
