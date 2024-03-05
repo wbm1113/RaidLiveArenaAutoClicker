@@ -23,6 +23,9 @@ No.  The script will move the mouse and send simulated clicks/keystrokes.  If yo
 ### Does it work in all tiers?
 No.  It won't work above Silver because it's only programmed to be able to select 5 champions.  Once I get to Gold, I will fix this.
 
+### How does the script handle cases where it waits in queue and an opponent can't be found?
+It will break.  I will fix this once I climb higher and start experiencing this problem myself.
+
 ### Will the script automatically use live arena tokens from my inbox when it runs out?
 No.  It will only ever do up to 5 battles at a time.
 
