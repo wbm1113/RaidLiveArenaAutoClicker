@@ -7,7 +7,7 @@ Autoclicker for Raid: Shadow Legends Live Arena.  USE AT YOUR OWN RISK.
 1. Download & install AutoHotkey v1.x: https://www.autohotkey.com/download/
 2. Open Raid and go to your champion collection.  Tag 5 champions with the tag 'Arena Build II'
 ![image](https://github.com/wbm1113/RaidLiveArenaAutoClicker/assets/46951987/0b83b984-6e20-4c57-a2ff-cf9a040ba216)
-3. Go to the Live Arena battle screen (where you can click 'Find Opponent') and run the script
+3. Go to the Live Arena battle screen (where you can click 'Find Opponent') and run the script (double click on the file that ends with the .ahk extension)
 4. The script will automatically re-position and re-size your raid window.  You will see your cursor start automatically moving.
 5. Watch the script for the first few battles to make sure it's working.
 6. Leave your computer alone while the script runs.  If you want to cancel it, press CTRL+ENTER
