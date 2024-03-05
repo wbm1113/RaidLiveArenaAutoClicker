@@ -1,0 +1,290 @@
+#SingleInstance, Force
+#Persistent
+SendMode, Input
+CoordMode, Mouse, Screen
+CoordMode, Pixel, Screen
+
+WinGet, raidProcessName, ProcessName, Raid: Shadow Legends
+if (raidProcessName != "Raid.exe") {
+    MsgBox Raid.exe window not found.  Make sure that your Raid client is open and that it is the only window with the title 'Raid: Shadow Legends'.
+    ExitApp
+}
+
+global raidHwnd := 0
+WinGet, raidHwnd, ID, Raid: Shadow Legends
+if (! raidHwnd) {
+    MsgBox No active Raid window found.
+    ExitApp
+}
+
+MsgBox Auto Live Arena will start.  This program assumes you have Raid open and you're at the Live Arena queue screen.  Make sure nothing is covering the Raid window.  Don't move or resize the window while the script is running.  Press CTRL+ESC at any time to immediately force close this script.
+
+WinMove, % "ahk_id " raidHwnd,, 0, 0, 800, 767
+
+global LiveArenaAutomatorState := {}
+LiveArenaAutomatorState.QueueUpScreen := 1
+LiveArenaAutomatorState.ConfirmingQueueUp := 2
+LiveArenaAutomatorState.WaitingInQueue := 3
+LiveArenaAutomatorState.ChampionSelectFiltering := 4
+LiveArenaAutomatorState.ChampionSelectPicking := 5
+LiveArenaAutomatorState.ActiveBattleJustStarted := 6
+LiveArenaAutomatorState.ActiveBattle := 7
+LiveArenaAutomatorState.PostBattle := 8
+
+global liveArenaAutomatorStateDescriptions = ["QueueUpScreen","ConfirmingQueueUp","WaitingInQueue","ChampionSelectFiltering","ChampionSelectPicking","ActiveBattleJustStarted","ActiveBattle","PostBattle"]
+
+class LiveArenaAutomator {
+    state := LiveArenaAutomatorState.QueueUpScreen
+    waitingInQueueCycles := 0
+    championSelectCycles := 0
+    activeBattleCycles := 0
+
+    Log(message) {
+        FileAppend, % a_now " State[" liveArenaAutomatorStateDescriptions[this.state] "]: " message "`r`n", log.txt
+    }
+
+    Update() {        
+        Tooltip % "State: " this.state
+
+        this.Log("Start of update loop")
+
+        if (this.state == LiveArenaAutomatorState.QueueUpScreen) {
+            queueScreenIndicatorCheck := this.SearchRaidScreen("QueueUpScreenIndicator")
+
+            if (queueScreenIndicatorCheck.found) {
+                this.Log("Queue screen indicator check passed, clicking 'Find Opponent' and advancing to ConfirmingQueueUp")
+
+                this.SendClickToRaidScreen(374, (542 + 167)) ; find opponent button
+                this.state := LiveArenaAutomatorState.ConfirmingQueueUp
+            }
+
+            Sleep 2000
+            return
+        }
+
+        if (this.state == LiveArenaAutomatorState.ConfirmingQueueUp) {
+            inQueueCheck := this.SearchRaidScreen("InQueueCancelButton")
+
+            if (inQueueCheck.found) {
+                this.Log("InQueueCancelButton check passed, advancing to WaitingInQueue")
+
+                this.state := LiveArenaAutomatorState.WaitingInQueue
+                this.waitingInQueueCycles := 0
+            } else {
+                this.Log("InQueueCancelButton check failed, reverting to QueueUpScreen")
+
+                this.state := LiveArenaAutomatorState.QueueUpScreen
+            }
+
+            Sleep 2000
+            return
+        }
+
+        if (this.state == LiveArenaAutomatorState.WaitingInQueue) {
+            if (this.waitingInQueueCycles > 30) {
+                this.ErrorOut("Timed out while waiting in queue")
+            }
+
+            inQueueCheck := this.SearchRaidScreen("InQueueCancelButton")
+            
+            if (inQueueCheck.found) {
+                this.Log("InQueueCancelButton check passed, continuing to wait")
+                this.waitingInQueueCycles++
+            } else {
+                this.Log("InQueueCancelButton check failed, advancing to ChampionSelectFiltering")
+                this.state := LiveArenaAutomatorState.ChampionSelectFiltering
+                Sleep 10000
+            }
+
+            Sleep 2000
+            return
+        }
+
+        if (this.state == LiveArenaAutomatorState.ChampionSelectFiltering) {
+            this.SendClickToRaidScreen(42, 510) ; ? filter button
+            Sleep 400
+            this.SendClickToRaidScreen(564, 545) ; expand champion tags
+            Sleep 400
+            this.SendClickToRaidScreen(475, 685) ; arena build II button in filter screen
+            Sleep 400
+            this.SendClickToRaidScreen(507, 722) ; hide button in filter screen
+
+            this.state := LiveArenaAutomatorState.ChampionSelectPicking
+            this.championSelectCycles := 0
+
+            this.Log("Finished selecting filters.  Advancing to ChampionSelectPicking")
+            return
+        }
+
+        if (this.state == LiveArenaAutomatorState.ChampionSelectPicking) {
+            if (this.championSelectCycles > 150) {
+                this.ErrorOut("Timed out in champion select")
+            }
+
+            inBattleCheck := this.SearchRaidScreen("PauseButtonBar")
+
+            if (inBattleCheck.found && inBattleCheck.coordinates[1] > 700 && inBattleCheck.coordinates[2] < 60) {
+                this.Log("inBattleCheck passed.  Transitioning state to ActiveBattleJustStarted")
+                this.state := LiveArenaAutomatorState.ActiveBattleJustStarted
+            } else {
+                this.Log("inBattleCheck failed.  Sending champion select pick clicks.")
+
+                this.championSelectCycles++
+
+                ; deselect anything currently selected within own champions
+                this.SendClickToRaidScreen(241, 356)
+                this.SendClickToRaidScreen(172, 310)
+                this.SendClickToRaidScreen(171, 398)
+                this.SendClickToRaidScreen(100, 309)
+                this.SendClickToRaidScreen(99, 398)
+
+                inBattleCheck := this.SearchRaidScreen("PauseButtonBar")
+                if (inBattleCheck.found && inBattleCheck.coordinates[1] > 700 && inBattleCheck.coordinates[2] < 60) {
+                    this.Log("inBattleCheck passed.  Transitioning state to ActiveBattleJustStarted")
+                    this.state := LiveArenaAutomatorState.ActiveBattleJustStarted
+                    return
+                }
+
+                ; click through all champion selections
+                this.SendClickToRaidScreen(39, 620)
+                this.SendClickToRaidScreen(39, 691)
+                this.SendClickToRaidScreen(100, 624)
+                this.SendClickToRaidScreen(101, 697)
+                this.SendClickToRaidScreen(160, 623)
+
+                inBattleCheck := this.SearchRaidScreen("PauseButtonBar")
+                if (inBattleCheck.found && inBattleCheck.coordinates[1] > 700 && inBattleCheck.coordinates[2] < 60) {
+                    this.Log("inBattleCheck passed.  Transitioning state to ActiveBattleJustStarted")
+                    this.state := LiveArenaAutomatorState.ActiveBattleJustStarted
+                    return
+                }
+
+                ; click opponent lead (to ban it), confirm
+                this.SendClickToRaidScreen(600, 310)
+                this.SendClickToRaidScreen(682, 696)
+
+                inBattleCheck := this.SearchRaidScreen("PauseButtonBar")
+                if (inBattleCheck.found && inBattleCheck.coordinates[1] > 700 && inBattleCheck.coordinates[2] < 60) {
+                    this.Log("inBattleCheck passed.  Transitioning state to ActiveBattleJustStarted")
+                    this.state := LiveArenaAutomatorState.ActiveBattleJustStarted
+                    return
+                }
+            }
+
+            Sleep 2000
+            return
+        }
+
+        if (this.state == LiveArenaAutomatorState.ActiveBattleJustStarted) {
+            this.Log("Sending autobattle hotkey to Raid.  Advancing to ActiveBattle")
+
+            Sleep 5000
+            this.SendKeystrokeToRaidScreen("T")
+            this.state := LiveArenaAutomatorState.ActiveBattle
+            this.activeBattleCycles := 0
+            
+            Sleep 2000
+            return
+        }
+
+        if (this.state == LiveArenaAutomatorState.ActiveBattle) {
+            if (this.activeBattleCycles > 500) {
+                this.ErrorOut("Timed out in active battle")
+            }
+
+            this.activeBattleCycles++
+
+            victoryCheck := this.SearchRaidScreen("VictoryIndicator")
+            if (victoryCheck.found) {
+                this.Log("Victory indicator detected.  Advancing to PostBattle")
+                this.state := LiveArenaAutomatorState.PostBattle
+                Sleep 1000
+                return
+            }
+
+            defeatCheck := this.SearchRaidScreen("DefeatIndicator")
+            if (defeatCheck.found) {
+                this.Log("Defeat indicator detected.  Advancing to PostBattle")
+                this.state := LiveArenaAutomatorState.PostBattle
+                Sleep 1000
+                return
+            }
+
+            ;inBattleCheck := this.SearchRaidScreen("PauseButtonBar")
+            ;if (inBattleCheck.found) {
+            ;    if (inBattleCheck.coordinates[1] > 700 && inBattleCheck.coordinates[2] < 60) {
+            ;        this.Log("PauseButtonBar check passed.  Waiting for battle to complete")
+            ;    } else if (inBattleCheck.coordinates[1] < 400 && inBattleCheck.coordinates[1] > 380 && inBattleCheck.coordinates[2] < 160 && inBattleCheck.coordinates[2] > 130) {
+            ;        this.Log("PauseButtonBar check passed, but in the weird spot that indicates it's post battle, so advancing to PostBattle")
+            ;        this.state := LiveArenaAutomatorState.PostBattle
+            ;    } else {
+            ;        this.Log("PauseButtonBar check passed in an unknown/unexpected way.  Waiting for battle to complete")
+            ;    }
+            ;} else {
+            ;    this.Log("PauseButtonBar check failed.  Advancing to PostBattle after 5 sec wait")
+            ;    this.state := LiveArenaAutomatorState.PostBattle
+            ;}
+
+            Sleep 5000
+            return
+        }
+
+        if (this.state == LiveArenaAutomatorState.PostBattle) {
+            this.Log("Sending ESC to screen.  Circling back to QueueUpScreen after 5 min wait")
+
+            this.SendKeystrokeToRaidScreen("{ESC}")
+            this.state := LiveArenaAutomatorState.QueueUpScreen
+            Sleep 5000
+            return
+        }
+    }
+
+    SearchRaidScreen(imageFile) {
+        WinGetPos, x, y, w, h, % "ahk_id " raidHwnd
+        ImageSearch, outX, outY, % x, % y, % x + w, % y + h, % "*30 " imageFile ".png"
+
+        found := ErrorLevel == 0
+
+        this.Log("Searching for '" imageFile "'.  Result: " found " at " outX ", " outY)
+
+        return {found: found, coordinates: [outX, outY]}
+    }
+
+    SendClickToRaidScreen(clickX, clickY, thenSleep := 200) {
+        WinGetPos, x, y, w, h, % "ahk_id " raidHwnd
+        WinActivate, % "ahk_id " raidHwnd
+        
+        MouseMove, % clickX + x, % clickY + y
+        Sleep 50
+        SendInput {Click}
+
+        Sleep % thenSleep
+
+        this.Log("Clicked " clickX ", " clickY)
+    }
+
+    SendKeystrokeToRaidScreen(key) {
+        WinActivate, % "ahk_id " raidHwnd
+        SendInput % key
+
+        this.Log("Pressed key " key)
+    }
+
+    ErrorOut(message) {
+        this.Log("Erroring out: " message)
+        MsgBox, % message
+        ExitApp
+    }
+}
+
+automator := new LiveArenaAutomator()
+;automator.state := LiveArenaAutomatorState.ChampionSelectPicking
+SetTimer, UpdateLoop, 500
+return
+
+UpdateLoop:
+automator.Update()
+return
+
+^Esc::
+ExitApp
