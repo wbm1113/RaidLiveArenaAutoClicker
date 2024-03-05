@@ -33,7 +33,7 @@ No.  It will only ever do up to 5 battles at a time.
 I don't know.
 
 ### Can the script intelligently ban/pick the right champions?
-No.
+No.  The script will always pick the same 5 champions, ban your opponent's first champion, and select your last champion as the lead.
 
 ### Can the script intelligently play the battle for me?
 No.  All battles are run on full auto.
