@@ -14,6 +14,9 @@ Autoclicker for Raid: Shadow Legends Live Arena.  USE AT YOUR OWN RISK.
 
 ## FAQ
 
+### How do I make the script stop?
+Press CTRL+ESC to immediately terminate the script at any time.
+
 ### Can I do other things on my machine while the script runs?
 No.  The script will move the mouse and send simulated clicks/keystrokes.  If you move the mouse or try to use your computer while the script is running, you will interfere with the script and the script will interfere with what you are doing.
 
