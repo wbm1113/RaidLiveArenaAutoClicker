@@ -271,7 +271,6 @@ class LiveArenaAutomator {
 }
 
 automator := new LiveArenaAutomator()
-automator.state := LiveArenaAutomatorState.ActiveBattle
 SetTimer, UpdateLoop, 500
 return
 
