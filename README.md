@@ -20,12 +20,6 @@ Press CTRL+ESC to immediately terminate the script at any time.
 ### Can I do other things on my machine while the script runs?
 No.  The script will move the mouse and send simulated clicks/keystrokes.  If you move the mouse or try to use your computer while the script is running, you will interfere with the script and the script will interfere with what you are doing.
 
-### Does it work in all tiers?
-No.  It won't work above Silver because it's only programmed to be able to select 5 champions.  Once I get to Gold, I will fix this.
-
-### How does the script handle cases where it waits in queue and an opponent can't be found?
-It will break.  I will fix this once I climb higher and start experiencing this problem myself.
-
 ### Will the script automatically use live arena tokens from my inbox when it runs out?
 No.  It will only ever do up to 5 battles at a time.
 
@@ -33,7 +27,7 @@ No.  It will only ever do up to 5 battles at a time.
 I don't know.
 
 ### Can the script intelligently ban/pick the right champions?
-No.  The script will always pick the same 5 champions, ban your opponent's first champion, and select your last champion as the lead.
+No.  The script will always pick the same 5 champions, ban your opponent's first champion, and select your second to last champion as the lead.
 
 ### Can the script intelligently play the battle for me?
 No.  All battles are run on full auto.
@@ -43,3 +37,8 @@ Windows only.
 
 ### Why isn't it working?
 It uses UI automation, which is a brittle programming technique, and I've only ever been able to test it on my own machine.
+
+## Known issues
+* The script will hang if you wait in queue too long and an opponent can't be found
+* The script will hang if you hit 35 wins and you get the popup with the live arena chest rewards
+* The script will only pick up to 5 champions, even in gold tier
