@@ -49,12 +49,16 @@ class LiveArenaAutomator {
         this.Log("Start of update loop")
 
         if (this.state == LiveArenaAutomatorState.QueueUpScreen) {
+            this.SendClickToRaidScreen(370, 165) ; active window, clear claim reward screen if needed
             queueScreenIndicatorCheck := this.SearchRaidScreen("QueueUpScreenIndicator")
 
             if (queueScreenIndicatorCheck.found) {
                 this.Log("Queue screen indicator check passed, clicking 'Find Opponent' and advancing to ConfirmingQueueUp")
-
-                this.SendClickToRaidScreen(374, (542 + 167)) ; find opponent button
+                this.SendClickToRaidScreen(750, 155) ; collect bag of tokens if available
+                Sleep 1000
+                this.SendClickToRaidScreen(400, 460) ; click the OK button if needed
+                Sleep 1000
+                this.SendClickToRaidScreen(374, 709) ; find opponent button
                 this.state := LiveArenaAutomatorState.ConfirmingQueueUp
             }
 
@@ -67,11 +71,15 @@ class LiveArenaAutomator {
 
             if (inQueueCheck.found) {
                 this.Log("InQueueCancelButton check passed, advancing to WaitingInQueue")
-
                 this.state := LiveArenaAutomatorState.WaitingInQueue
                 this.waitingInQueueCycles := 0
             } else {
                 this.Log("InQueueCancelButton check failed, reverting to QueueUpScreen")
+
+                refillButtonCheck := this.SearchRaidScreen("RefillConfirmButton")
+                if (refillButtonCheck.found) {
+                    this.SendClickToRaidScreen(400, 490)
+                }
 
                 this.state := LiveArenaAutomatorState.QueueUpScreen
             }
@@ -121,6 +129,14 @@ class LiveArenaAutomator {
                 this.ErrorOut("Timed out in champion select")
             }
 
+            opponentLeftCheck := this.SearchRaidScreen("OpponentLeftAtChampSelectIndicator")
+            if (opponentLeftCheck.found) {
+                this.SendKeystrokeToRaidScreen("{ESC}")
+                this.state := LiveArenaAutomatorState.QueueUpScreen
+                Sleep 2000
+                return
+            }
+
             inBattleCheck := this.SearchRaidScreen("PauseButtonBar")
 
             if (inBattleCheck.found && inBattleCheck.coordinates[1] > 700 && inBattleCheck.coordinates[2] < 60) {
@@ -151,6 +167,9 @@ class LiveArenaAutomator {
                 this.SendClickToRaidScreen(100, 624)
                 this.SendClickToRaidScreen(101, 697)
                 this.SendClickToRaidScreen(160, 623)
+                this.SendClickToRaidScreen(160, 695)
+                this.SendClickToRaidScreen(230, 623)
+                this.SendClickToRaidScreen(230, 695)
 
                 inBattleCheck := this.SearchRaidScreen("PauseButtonBar")
                 if (inBattleCheck.found && inBattleCheck.coordinates[1] > 700 && inBattleCheck.coordinates[2] < 60) {
@@ -194,25 +213,25 @@ class LiveArenaAutomator {
 
             this.activeBattleCycles++
 
-            victoryCheck := this.SearchRaidScreen("VictoryIndicator")
-            if (victoryCheck.found) {
-                this.Log("Victory indicator detected.  Advancing to PostBattle")
+            endOfBattleCheck := this.SearchRaidScreen("VictoryIndicator")
+            if (endOfBattleCheck.found) {
+                this.Log("End of battle indicator detected.  Advancing to PostBattle")
                 this.state := LiveArenaAutomatorState.PostBattle
                 Sleep 1000
                 return
             }
 
-            defeatCheck := this.SearchRaidScreen("DefeatIndicator")
-            if (defeatCheck.found) {
-                this.Log("Defeat indicator detected.  Advancing to PostBattle")
+            endOfBattleCheck := this.SearchRaidScreen("DefeatIndicator")
+            if (endOfBattleCheck.found) {
+                this.Log("End of battle indicator detected.  Advancing to PostBattle")
                 this.state := LiveArenaAutomatorState.PostBattle
                 Sleep 1000
                 return
             }
 
-            opponentLeftBattleCheck := this.SearchRaidScreen("OpponentLeftBattleVictoryIndicator")
-            if (opponentLeftBattleCheck.found) {
-                this.Log("Opponent left battle indicator found.  Advancing to PostBattle")
+            endOfBattleCheck := this.SearchRaidScreen("OpponentLeftIndicator")
+            if (endOfBattleCheck.found) {
+                this.Log("End of battle indicator detected.  Advancing to PostBattle")
                 this.state := LiveArenaAutomatorState.PostBattle
                 Sleep 1000
                 return
@@ -223,8 +242,7 @@ class LiveArenaAutomator {
         }
 
         if (this.state == LiveArenaAutomatorState.PostBattle) {
-            this.Log("Sending ESC to screen.  Circling back to QueueUpScreen after 5 min wait")
-
+            this.Log("Sending ESC to screen.  Circling back to QueueUpScreen after 5 sec wait")
             this.SendKeystrokeToRaidScreen("{ESC}")
             this.state := LiveArenaAutomatorState.QueueUpScreen
             Sleep 5000
@@ -246,12 +264,11 @@ class LiveArenaAutomator {
     SendClickToRaidScreen(clickX, clickY, thenSleep := 200) {
         WinGetPos, x, y, w, h, % "ahk_id " raidHwnd
         WinActivate, % "ahk_id " raidHwnd
-        
         MouseMove, % clickX + x, % clickY + y
-        Sleep 50
         SendInput {Click}
 
         Sleep % thenSleep
+        Sleep 50
 
         this.Log("Clicked " clickX ", " clickY)
     }
@@ -259,7 +276,6 @@ class LiveArenaAutomator {
     SendKeystrokeToRaidScreen(key) {
         WinActivate, % "ahk_id " raidHwnd
         SendInput % key
-
         this.Log("Pressed key " key)
     }
 
