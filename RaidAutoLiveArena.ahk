@@ -129,6 +129,16 @@ class LiveArenaAutomator {
                 this.ErrorOut("Timed out in champion select")
             }
 
+            opponentLeftAndScriptIsStuckInBattleLog := this.SearchRaidScreen("SelectedLeaderboardButton")
+            if (opponentLeftAndScriptIsStuckInBattleLog.found) {
+                this.SendClickToRaidScreen(80, 100) ; click 'Battles' button to return to queue screen
+                Sleep 400
+                this.Log("Correcting misadventure into Leaderboard screen")
+                this.state := LiveArenaAutomatorState.QueueUpScreen
+                Sleep 2000
+                return
+            }
+
             opponentLeftCheck := this.SearchRaidScreen("OpponentLeftAtChampSelectIndicator")
             if (opponentLeftCheck.found) {
                 this.SendKeystrokeToRaidScreen("{ESC}")
