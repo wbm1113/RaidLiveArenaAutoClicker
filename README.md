@@ -1,11 +1,15 @@
 # RaidLiveArenaAutoClicker
 
-Autoclicker for Raid: Shadow Legends Live Arena.  USE AT YOUR OWN RISK.
+Autoclicker for Raid: Shadow Legends Live Arena.
+
+This tool will start from the queue up screen, queue up, wait until champion select, pick your champions, ban your opponent's champ, pick your lead, run the battle on full auto, exit the post-battle screen, and repeat until you run out of tokens.
+
+USE AT YOUR OWN RISK -- see below for discussion on whether this is bannable.
 
 ## Installation/Usage Instructions
 
 1. Download the repo and unzip to your desktop or wherever you like to put files.
-2. Download & install AutoHotkey v1.x: https://www.autohotkey.com/download/.
+2. Download & install AutoHotkey v1.x: https://www.autohotkey.com/download/.  This script will NOT work with the latest version of AHK (which is version 2.x).
 3. Make sure you have desktop scaling set at 100% (if you're using a high res monitor you may be at 150% - 200% scaling, which can interfere with the script).  You can change this setting by right clicking on your desktop, selecting "Display Settings" and scrolling down to the "Scale" option.
 4. Open Raid.
 5. Go to Options and make sure the 'Optimize in-game UI' option is OFF as this will break the script.
@@ -18,6 +22,12 @@ Autoclicker for Raid: Shadow Legends Live Arena.  USE AT YOUR OWN RISK.
 
 ## FAQ
 
+### Will I get banned if I use it?
+I don't know.  I've used it for hundreds of battles over several months without any problems.  It's strictly an autoclicker,
+which Plarium has historically tolerated.  If we can use BlueStacks to circumvent the multibattle system, I doubt this
+tool is a problem.  That aside, be honest with yourself: if you lost your Raid account, would that really be a bad
+thing for you?
+
 ### How do I make the script stop?
 Press CTRL+ESC to immediately terminate the script at any time.
 
@@ -26,9 +36,6 @@ No.  The script will move the mouse and send simulated clicks/keystrokes.  If yo
 
 ### What happens when I run out of tokens?
 The script will automatically collect the free token bag you get for doing 5 battles.  It will also automatically use tokens that are in your inbox.  It will not use gems to automatically get more tokens.
-
-### Will I get banned if I use it?
-I don't know.  I've used it for hundreds of battles over several months without any problems.
 
 ### Can the script intelligently ban/pick the right champions?
 No.  The script will always pick 5 champions mostly randomly (from the pool of champions that you tagged in the instructions above), then ban your opponent's first champion, and select your second to last champion as the lead.
