@@ -6,6 +6,8 @@ This tool will start from the queue up screen, queue up, wait until champion sel
 
 USE AT YOUR OWN RISK -- see below for discussion on whether this is bannable.
 
+Note that if Plarium makes an update that changes the UI for Live Arena, the script will likely break for a day or two until I have a chance to fix.
+
 ## Installation/Usage Instructions
 
 1. Download the repo and unzip to your desktop or wherever you like to put files.
@@ -45,6 +47,3 @@ No.  All battles are run on full auto.
 
 ### What platforms are supported?
 Windows only.
-
-### Why isn't it working?
-It uses UI automation, which is a brittle programming technique, and I've only ever been able to test it on my own machine.
