@@ -172,14 +172,14 @@ class LiveArenaAutomator {
                 }
 
                 ; click through all champion selections
-                this.SendClickToRaidScreen(39, 620)
-                this.SendClickToRaidScreen(39, 691)
-                this.SendClickToRaidScreen(100, 624)
-                this.SendClickToRaidScreen(101, 697)
-                this.SendClickToRaidScreen(160, 623)
-                this.SendClickToRaidScreen(160, 695)
-                this.SendClickToRaidScreen(230, 623)
-                this.SendClickToRaidScreen(230, 695)
+                this.SendClickToRaidScreen(39 + 55, 620)
+                this.SendClickToRaidScreen(39 + 55, 691)
+                this.SendClickToRaidScreen(100 + 55, 624)
+                this.SendClickToRaidScreen(101 + 55, 697)
+                this.SendClickToRaidScreen(160 + 55, 623)
+                this.SendClickToRaidScreen(160 + 55, 695)
+                this.SendClickToRaidScreen(230 + 55, 623)
+                this.SendClickToRaidScreen(230 + 55, 695)
 
                 inBattleCheck := this.SearchRaidScreen("PauseButtonBar")
                 if (inBattleCheck.found && inBattleCheck.coordinates[1] > 700 && inBattleCheck.coordinates[2] < 60) {
