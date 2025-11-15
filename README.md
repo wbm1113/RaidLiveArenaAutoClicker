@@ -1,6 +1,6 @@
 # RaidLiveArenaAutoClicker
 
-Autoclicker for Raid: Shadow Legends Live Arena.
+Autoclicker for Raid: Shadow Legends Live Arena.  Please give the repo a star if you enjoy!
 
 This tool will start from the queue up screen, queue up, wait until champion select, pick your champions, ban your opponent's champ, pick your lead, run the battle on full auto, exit the post-battle screen, and repeat until you run out of tokens.
 
