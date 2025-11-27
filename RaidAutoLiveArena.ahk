@@ -252,6 +252,7 @@ class LiveArenaAutomator {
         }
 
         if (this.state == LiveArenaAutomatorState.PostBattle) {
+            Sleep 5000
             this.Log("Sending ESC to screen.  Circling back to QueueUpScreen after 5 sec wait")
             this.SendKeystrokeToRaidScreen("{ESC}")
             this.state := LiveArenaAutomatorState.QueueUpScreen
