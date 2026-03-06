@@ -111,7 +111,7 @@ class LiveArenaAutomator {
         if (this.state == LiveArenaAutomatorState.ChampionSelectFiltering) {
             this.SendClickToRaidScreen(42, 510) ; ? filter button
             Sleep 400
-            this.SendClickToRaidScreen(566, 665) ; expand champion tags
+            this.SendClickToRaidScreen(570, 580) ; expand champion tags
             Sleep 400
             this.SendClickToRaidScreen(575, 685) ; arena build II button in filter screen
             Sleep 400
